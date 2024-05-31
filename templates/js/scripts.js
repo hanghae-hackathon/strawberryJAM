@@ -1,61 +1,3 @@
-/*!
-* Start Bootstrap - Stylish Portfolio v6.0.6 (https://startbootstrap.com/theme/stylish-portfolio)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-stylish-portfolio/blob/master/LICENSE)
-*/
-window.addEventListener('DOMContentLoaded', event => {
-
-    const sidebarWrapper = document.getElementById('sidebar-wrapper');
-    let scrollToTopVisible = false;
-    // Closes the sidebar menu
-    const menuToggle = document.body.querySelector('.menu-toggle');
-    menuToggle.addEventListener('click', event => {
-        event.preventDefault();
-        sidebarWrapper.classList.toggle('active');
-        _toggleMenuIcon();
-        menuToggle.classList.toggle('active');
-    })
-
-    // Closes responsive menu when a scroll trigger link is clicked
-    var scrollTriggerList = [].slice.call(document.querySelectorAll('#sidebar-wrapper .js-scroll-trigger'));
-    scrollTriggerList.map(scrollTrigger => {
-        scrollTrigger.addEventListener('click', () => {
-            sidebarWrapper.classList.remove('active');
-            menuToggle.classList.remove('active');
-            _toggleMenuIcon();
-        })
-    });
-
-    function _toggleMenuIcon() {
-        const menuToggleBars = document.body.querySelector('.menu-toggle > .fa-bars');
-        const menuToggleTimes = document.body.querySelector('.menu-toggle > .fa-xmark');
-        if (menuToggleBars) {
-            menuToggleBars.classList.remove('fa-bars');
-            menuToggleBars.classList.add('fa-xmark');
-        }
-        if (menuToggleTimes) {
-            menuToggleTimes.classList.remove('fa-xmark');
-            menuToggleTimes.classList.add('fa-bars');
-        }
-    }
-
-    // Scroll to top button appear
-    document.addEventListener('scroll', () => {
-        const scrollToTop = document.body.querySelector('.scroll-to-top');
-        if (document.documentElement.scrollTop > 100) {
-            if (!scrollToTopVisible) {
-                fadeIn(scrollToTop);
-                scrollToTopVisible = true;
-            }
-        } else {
-            if (scrollToTopVisible) {
-                fadeOut(scrollToTop);
-                scrollToTopVisible = false;
-            }
-        }
-    })
-})
-
 function fadeOut(el) {
     el.style.opacity = 1;
     (function fade() {
@@ -78,3 +20,52 @@ function fadeIn(el, display) {
         }
     })();
 };
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    function isPortfolioItemSelected() {
+        return document.querySelector('.portfolio-item.selected') !== null;
+    }
+
+    // Function to redirect to the discussion page with appropriate action
+    function redirectToDiscussionPage(action, discussionId) {
+        window.location.href = `/discussions/${discussionId}/${action}`;
+    }
+
+    // Add click event listeners to portfolio items
+    document.querySelectorAll('.portfolio-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove selected class from all portfolio items
+            document.querySelectorAll('.portfolio-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            // Add selected class to the clicked portfolio item
+            this.classList.add('selected');
+        });
+    });
+
+    // Add click event listeners to "글로 시작하기" and "말로 시작하기" buttons
+    document.getElementById("text-start-button").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default action of link
+        // Redirect to the discussion page with appropriate action if a portfolio item is selected
+        if (isPortfolioItemSelected()) {
+            const discussionId = "{{ discussion_id }}"; // discussion_id를 FastAPI 템플릿 시스템을 통해 전달받음
+            redirectToDiscussionPage("text", discussionId);
+        } else {
+            // Show alert if no portfolio item is selected
+            alert("주제를 선택하세요.");
+        }
+    });
+
+    document.getElementById("voice-start-button").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default action of link
+        // Redirect to the discussion page with appropriate action if a portfolio item is selected
+        if (isPortfolioItemSelected()) {
+            const discussionId = "{{ discussion_id }}"; // discussion_id를 FastAPI 템플릿 시스템을 통해 전달받음
+            redirectToDiscussionPage("voice", discussionId);
+        } else {
+            // Show alert if no portfolio item is selected
+            alert("주제를 선택하세요.");
+        }
+    });
+});
