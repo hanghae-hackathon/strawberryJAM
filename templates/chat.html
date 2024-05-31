@@ -145,7 +145,12 @@
             case 'user':
                 messageElement.innerHTML = data.message;
                 messageElement.classList.add('user');
-                ws.send(data.message);
+                ws.send(JSON.stringify(
+                    {
+                        discussion_id: "{{ discussion_id }}",
+                        message: data.message
+                    }
+                ));
                 break;
         }
 
