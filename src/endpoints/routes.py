@@ -1,7 +1,7 @@
-from src.endpoints import (
-    discussions
+from endpoints import (
+    discussion
 )
 
 endpoints = [
-    discussions
+    discussion
 ]
