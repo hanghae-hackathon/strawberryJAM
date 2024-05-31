@@ -1,6 +1,10 @@
 import json
-from fastapi import FastAPI, WebSocket
+import uuid
+from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+
+from src.models.message import Message
+from src.services.message import MessageService
 
 ws = FastAPI()
 
@@ -12,11 +16,26 @@ ws.add_middleware(
     allow_headers=["*"],
 )
 
+
 @ws.websocket("/discussions")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(
+    websocket: WebSocket,
+    message_service: MessageService = Depends(MessageService),
+):
     await websocket.accept()
     while True:
-        data = await websocket.receive_text()
+        data = json.loads(await websocket.receive_text())
+
+        user_message = Message.create(
+            role="user",
+            message=data["message"],
+            discussion_id=uuid.UUID(data["discussion_id"]).bytes,
+        )
+
+        await message_service.create_message(
+            message=user_message,
+        )
+
         await websocket.send_text(
             json.dumps(
                 {
@@ -25,6 +44,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 }
             )
         )
+
         await websocket.send_text(
             json.dumps(
                 {
