@@ -1,4 +1,4 @@
-from endpoints import (
+from src.endpoints import (
     discussion
 )
 
