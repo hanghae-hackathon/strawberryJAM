@@ -2,12 +2,7 @@ import typing
 from typing import List
 import uuid
 from .base import Base
-from sqlalchemy import (
-    BLOB,
-    String,
-    Text,
-    Integer
-)
+from sqlalchemy import BLOB, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if typing.TYPE_CHECKING:

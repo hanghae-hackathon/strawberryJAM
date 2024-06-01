@@ -1,7 +1,7 @@
 from fastapi import Depends
 
 from src.database import get_db
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.message import Message
 
@@ -30,3 +30,13 @@ class MessageRepository:
         await self.session.refresh(instance=message)
 
         return message
+
+    async def update_message(self, message: Message):
+        query = (
+            update(Message)
+            .where(Message.id == message.id)
+            .values(message=message.message)
+            .returning(Message)
+        )
+
+        return (await self.session.execute(query)).scalar()

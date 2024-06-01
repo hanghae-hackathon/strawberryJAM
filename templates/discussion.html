@@ -110,6 +110,17 @@
 <script>
     // websocket 연결
     const ws = new WebSocket("ws://localhost:8000/ws/discussions");
+    const messages = {};
+
+    // 연결되면
+    ws.onopen = () => {
+        ws.send(JSON.stringify(
+            {
+                discussion_id: "{{ discussion_id }}",
+                message: `{{ topic_description }}`
+            }
+        ));
+    };
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -135,7 +146,19 @@
 
         switch (data.role) {
             case 'bot':
-                messageElement.innerHTML = marked.parse(data.message);
+                // messages
+                if (!messages[data.id]) {
+                    messages[data.id] = '';
+                }
+                
+                const existingMessage = document.getElementById(data.id);
+                if (existingMessage) {
+                    messages[data.id] += data.message;
+                    existingMessage.innerHTML = marked.parse(messages[data.id]);
+                    return;
+                }
+                messageElement.id = data.id;
+                messageElement.innerHTML = data.message;
                 messageElement.classList.add('bot');
                 break;
             case 'system':
@@ -148,7 +171,7 @@
                 ws.send(JSON.stringify(
                     {
                         discussion_id: "{{ discussion_id }}",
-                        message: data.message
+                        message: "유저와 전문가는 토의를 진행하고 있습니다. 다음 질문에 대한 유저의 답변을 보고, 다음 태스크 2개를 수행하세요. 유저의 답변이 주어진 질문과 관련이 없으면 1점, 약간만 관련이 있거나 논리가 부족하다면 2-3점, 충분하다면 4-5점을 부여하세요. 만점은 5점입니다. 답변의 길이가 한,두문장 정도로 짧아도 핵심 내용을 포함하고 있다면 충분한 점수를 부여하세요. 1. 유저의 답변이 논리적으로, 질적으로 충분한지 판단하고, 부족하다고 판단했을 경우, 즉 3점 이하일 경우, 이전 질문에 연관된 꼬리질문을 생성하세요. 내용과 관This will be surrounded by <tail></tail> tags. \n 2. 유저의 답변이 논리적으로, 질적으로 충분하다고 판단했을 경우, 즉 4점 이상일 경우, 이전 질문과는 다른, 사용자의 비판적 사고력을 향상시킬 수 있는 관련된 다른 질문을 생성하세요. 해당 질문은 will be surrounded by <next></next> tags. \n\n ₩₩₩\n"+ data.message
                     }
                 ));
                 break;
@@ -166,7 +189,7 @@
         }
     });
 
-    document.getElementById('markdown-content').innerHTML = marked.parse("# 마크다운 문서 예시\n- 항목 1\n- 항목 2\n- **굵게** 표시\n- *기울임* 표시\n\n## 코드 블록\n\`\`\`python\ndef hello_world():\n    print(\"Hello, world!\")\n\`\`\`");
+    document.getElementById('markdown-content').innerHTML = marked.parse(`## {{ topic_title }} \n\n {{ topic_description }}`);
 </script>
 
 

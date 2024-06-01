@@ -3,8 +3,6 @@ from .base import Base
 from sqlalchemy import (
     BLOB,
     ForeignKey,
-    String,
-    Text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import typing
@@ -32,6 +30,4 @@ class Discussion(Base):
         cls,
         topic_id: bytes,
     ) -> "Discussion":
-        return cls(
-            topic_id=topic_id
-        )
+        return cls(topic_id=topic_id)

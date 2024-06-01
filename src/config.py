@@ -14,6 +14,8 @@ class ConfigTemplate(BaseSettings):
     def db_uri(self) -> str:
         return "sqlite+aiosqlite:///./sql_app.db"
 
+    OPENAI_API_KEY: str
+
 
 config = ConfigTemplate()
 

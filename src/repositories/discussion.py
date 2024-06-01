@@ -16,6 +16,14 @@ class DiscussionRepository:
         discussion = result.scalars().first()
         return discussion
 
+    async def get_discussions(self, ids: list[bytes] | None):
+        query = select(Discussion)
+
+        if ids:
+            query = query.where(Discussion.id.in_(ids))
+
+        return (await self.session.scalars(query)).all()
+
     async def create_discussion(self, discussion: Discussion):
         self.session.add(instance=discussion)
         await self.session.commit()
