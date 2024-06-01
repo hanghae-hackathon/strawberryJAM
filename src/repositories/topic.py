@@ -11,7 +11,7 @@ class TopicRepository:
     def __init__(self, session: AsyncSession = Depends(get_db)):
         self.session = session
 
-    async def get_topic(self, topic_id: int):
+    async def get_topic(self, topic_id: bytes):
         query = select(Topic).where(Topic.id == topic_id)
 
         return (await self.session.scalars(query)).first()

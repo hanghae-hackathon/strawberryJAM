@@ -10,6 +10,9 @@ class MessageService:
     async def create_message(self, message: Message):
         return await self.repo.create_message(message=message)
 
+    async def update_message(self, message: Message):
+        return await self.repo.update_message(message=message)
+
     async def get_message(self, message_id: int):
         return await self.repo.get_message(message_id=message_id)
 
