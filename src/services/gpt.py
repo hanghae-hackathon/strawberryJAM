@@ -98,9 +98,9 @@ class GPTService:
             user_response (str): _description_
         """
         system_message = SystemMessage(
-            content="You are a helpful professional debator and both '평가자', not AI.",
+            content="위 뉴스기사를 보고 이해도를 판단할 수 있을 법한 질문 3개만 해줘.\n 너가 답변은 하지 말고.",
         )
-
+        print(messages)
         return self.llm.stream(input=[system_message] + messages)
 
     def reload_conversation(self, discussion_id: str) -> ConversationChain:
