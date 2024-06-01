@@ -98,7 +98,7 @@ class GPTService:
             user_response (str): _description_
         """
         system_message = SystemMessage(
-            content="위 뉴스기사를 보고 이해도를 판단할 수 있을 법한 질문 3개만 해줘.\n 너가 답변은 하지 말고.",
+            content="위 뉴스기사를 보고 이해도를 판단할 수 있을 법한 질문 2개만 해줘.\n 너가 답변은 하지마.",
         )
         print(messages)
         return self.llm.stream(input=[system_message] + messages)
