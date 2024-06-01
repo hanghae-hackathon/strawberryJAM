@@ -72,7 +72,8 @@ class GPTService:
             model_name="gpt-4o",
             streaming=True,
             openai_api_key=config_template.OPENAI_API_KEY,
-            temperature=0.5,
+            temperature=0.0,
+            seed=42,
         )
     
     # 맨 처음 호출될 함수
@@ -89,7 +90,7 @@ class GPTService:
         self.generate_big_question(discussion_id, system_message)
         return None
 
-    def chat(self, messages: list[ChatMessage]) -> Iterator[BaseMessageChunk]:
+    def chat(self, messages: list[ChatMessage], feedback=False) -> Iterator[BaseMessageChunk]:
         """
             채팅이 진행됩니다. 유저의 질문을 바탕으로 다음 질문을 생성합니다.
 
@@ -98,7 +99,11 @@ class GPTService:
             user_response (str): _description_
         """
         system_message = SystemMessage(
-            content="위 뉴스기사를 보고 이해도를 판단할 수 있을 법한 질문 2개만 해줘.\n 너가 답변은 하지마.",
+            content="위 뉴스기사를 보고 이해도를 판단할 수 있을 법한 질문 3개만 해줘.\n 너가 답변은 하지말고, 질문만 생성해.",
+        )
+        if feedback:
+            system_message = SystemMessage(
+            content="You are a helpful '평가자' for debate, not an AI assistant.",
         )
         print(messages)
         return self.llm.stream(input=[system_message] + messages)

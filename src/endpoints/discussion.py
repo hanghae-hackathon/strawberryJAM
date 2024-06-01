@@ -57,7 +57,7 @@ async def read_discussion(
         final_wordpaper += wordpaper.content
 
     init_prompt = (
-        "위 뉴스기사를 보고 이해도를 판단할 수 있을 법한 질문 2개만 해줘.\n "
+        "위 뉴스기사를 보고 이해도를 판단할 수 있을 법한 질문 3개만 해줘.\n "
         "다른 말은 절대로 출력하지 마. \n "
         "\n "
         f"{ topic.description }"

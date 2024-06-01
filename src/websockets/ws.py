@@ -46,58 +46,58 @@ async def websocket_endpoint(
         user_message_count = len(
             [message for message in messages if message.role == "user"]
         )
-
-        stream = gpt_service.chat(
-            messages=[
-                (
-                    HumanMessage(
-                        content=message.message,
+        if user_message_count <= 3:
+            stream = gpt_service.chat(
+                messages=[
+                    (
+                        HumanMessage(
+                            content=message.message,
+                        )
+                        if message.role == "user"
+                        else AIMessage(
+                            content=message.message,
+                        )
                     )
-                    if message.role == "user"
-                    else AIMessage(
-                        content=message.message,
-                    )
-                )
-                for message in messages
-            ]
-        )
-
-        ai_message = await message_service.create_message(
-            Message.create(
-                role="bot",
-                message="",
-                discussion_id=uuid.UUID(data["discussion_id"]).bytes,
-            ),
-        )
-
-        temp = ""
-
-        for chunk in stream:
-            c = chunk.content
-            temp += c
-            await websocket.send_text(
-                json.dumps(
-                    {
-                        "id": str(ai_message.id),
-                        "message": c,
-                        "role": "bot",
-                    }
-                )
+                    for message in messages
+                ]
             )
-            await asyncio.sleep(0.01)
 
-        await message_service.update_message(
-            Message(
-                id=ai_message.id,
-                role="bot",
-                message=temp,
-                discussion_id=uuid.UUID(data["discussion_id"]).bytes,
-            ),
-        )
+            ai_message = await message_service.create_message(
+                Message.create(
+                    role="bot",
+                    message="",
+                    discussion_id=uuid.UUID(data["discussion_id"]).bytes,
+                ),
+            )
 
-        messages = await message_service.get_messages_by_discussion_id(
-            discussion_id=uuid.UUID(data["discussion_id"]).bytes
-        )
+            temp = ""
+
+            for chunk in stream:
+                c = chunk.content
+                temp += c
+                await websocket.send_text(
+                    json.dumps(
+                        {
+                            "id": str(ai_message.id),
+                            "message": c,
+                            "role": "bot",
+                        }
+                    )
+                )
+                await asyncio.sleep(0.01)
+
+            await message_service.update_message(
+                Message(
+                    id=ai_message.id,
+                    role="bot",
+                    message=temp,
+                    discussion_id=uuid.UUID(data["discussion_id"]).bytes,
+                ),
+            )
+
+            messages = await message_service.get_messages_by_discussion_id(
+                discussion_id=uuid.UUID(data["discussion_id"]).bytes
+            )
 
         if user_message_count == 4:
             prompt = """이제 유저와 전문가의 토의 내용을 바탕으로 유저에게 토의내용에 대한 피드백을 제공하고자 합니다.
@@ -132,7 +132,8 @@ async def websocket_endpoint(
                             content=prompt,
                         )
                     ),
-                ]
+                ],
+                feedback=True
             )
 
             temp = ""
