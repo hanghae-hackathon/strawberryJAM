@@ -12,8 +12,9 @@ class DiscussionRepository:
 
     async def get_discussion(self, discussion_id: bytes):
         query = select(Discussion).where(Discussion.id == discussion_id)
-
-        return (await self.session.scalars(query)).first()
+        result = await self.session.execute(query)
+        discussion = result.scalars().first()
+        return discussion
 
     async def create_discussion(self, discussion: Discussion):
         self.session.add(instance=discussion)

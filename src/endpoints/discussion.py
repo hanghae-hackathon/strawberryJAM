@@ -20,7 +20,10 @@ async def read_discussion(
     repo: DiscussionRepository = Depends(DiscussionRepository),
 ):
     try:
-        discussion = await repo.get_discussion(discussion_id.bytes)
+        discussion_bytes = discussion_id.bytes
+        discussion = await repo.get_discussion(discussion_bytes)
+        print(discussion_id)
+        print(discussion)
         if not discussion:
             raise HTTPException(status_code=404, detail="Discussion not found")
 
@@ -32,6 +35,7 @@ async def read_discussion(
     except Exception as e:
         print(f"Error reading discussion {discussion_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
 
 
 class CreateDiscussionRequest(BaseModel):
