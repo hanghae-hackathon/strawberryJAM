@@ -30,6 +30,4 @@ class Discussion(Base):
         cls,
         topic_id: bytes,
     ) -> "Discussion":
-        return cls(
-            topic_id=topic_id
-        )
+        return cls(topic_id=topic_id)

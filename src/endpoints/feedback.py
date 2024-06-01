@@ -28,10 +28,8 @@ async def show_topic(
     request: Request,
     templates: Jinja2Templates = Depends(get_templates),
 ):
-    return templates.TemplateResponse(
-        request=request,
-        name="topics.html"
-    )
+    return templates.TemplateResponse(request=request, name="topics.html")
+
 
 @router.post("/")
 async def create_topic(

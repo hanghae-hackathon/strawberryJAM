@@ -29,15 +29,15 @@ async def show_topic(
     templates: Jinja2Templates = Depends(get_templates),
     topic_repo: TopicRepository = Depends(TopicRepository),
 ):
-    
+
     random_topic_ids = await topic_repo.get_random_topic_ids()
 
     topics_details = await topic_repo.get_topic_details_by_ids(random_topic_ids)
 
     return templates.TemplateResponse(
-        "topics.html",
-        {"request": request, "topics_details": topics_details}
+        "topics.html", {"request": request, "topics_details": topics_details}
     )
+
 
 @router.post("/")
 async def create_topic(

@@ -1,8 +1,7 @@
 import os
 
 import uvicorn
-from fastapi import FastAPI, Form, Request, Response
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from src.websockets.ws import ws
@@ -18,9 +17,11 @@ for endpoint in endpoints:
 
 app.mount("/static", StaticFiles(directory="templates"), name="static")
 
+
 @app.get("/")
 async def main_get(request: Request):
     return templates.TemplateResponse("main.html", {"request": request})
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

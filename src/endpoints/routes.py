@@ -1,11 +1,3 @@
-from src.endpoints import (
-    discussion,
-    topic,
-    feedback
-)
+from src.endpoints import discussion, topic, feedback
 
-endpoints = [
-    discussion,
-    topic,
-    feedback
-]
+endpoints = [discussion, topic, feedback]
