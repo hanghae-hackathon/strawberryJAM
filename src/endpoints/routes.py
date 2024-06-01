@@ -1,9 +1,11 @@
 from src.endpoints import (
     discussion,
-    topic
+    topic,
+    feedback
 )
 
 endpoints = [
     discussion,
-    topic
+    topic,
+    feedback
 ]

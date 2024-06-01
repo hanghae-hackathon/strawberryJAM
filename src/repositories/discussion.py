@@ -10,7 +10,7 @@ class DiscussionRepository:
     def __init__(self, session: AsyncSession = Depends(get_db)):
         self.session = session
 
-    async def get_discussion(self, discussion_id: int):
+    async def get_discussion(self, discussion_id: bytes):
         query = select(Discussion).where(Discussion.id == discussion_id)
 
         return (await self.session.scalars(query)).first()

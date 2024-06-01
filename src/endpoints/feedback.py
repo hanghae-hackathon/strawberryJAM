@@ -9,7 +9,7 @@ from src.repositories.topic import TopicRepository
 from src.utils import get_templates
 
 
-router = APIRouter(prefix="/topics", tags=["topic"])
+router = APIRouter(prefix="/feedback", tags=["feedback"])
 
 
 class CreateTopicRequest(BaseModel):
@@ -27,16 +27,10 @@ class CreateTopicResponse(BaseModel):
 async def show_topic(
     request: Request,
     templates: Jinja2Templates = Depends(get_templates),
-    topic_repo: TopicRepository = Depends(TopicRepository),
 ):
-    
-    random_topic_ids = await topic_repo.get_random_topic_ids()
-
-    topics_details = await topic_repo.get_topic_details_by_ids(random_topic_ids)
-
     return templates.TemplateResponse(
-        "topics.html",
-        {"request": request, "topics_details": topics_details}
+        request=request,
+        name="topics.html"
     )
 
 @router.post("/")

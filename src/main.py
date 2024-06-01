@@ -20,7 +20,7 @@ app.mount("/static", StaticFiles(directory="templates"), name="static")
 
 @app.get("/")
 async def main_get(request: Request):
-    return templates.TemplateResponse("main.html", {"request": request, "token": None})
+    return templates.TemplateResponse("main.html", {"request": request})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

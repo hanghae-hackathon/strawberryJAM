@@ -44,52 +44,19 @@
                     <h2 class="mb-5">주제를 골라주세요.</h2>
                 </div>
                 <div class="pb-3 row gx-0">
+                    {% for topic_detail in topics_details %}
                     <div class="col-lg-6">
-                        <a class="portfolio-item">
+                        <a class="portfolio-item" data-id="{{ topic_detail[0].hex() }}">
                             <div class="caption">
                                 <div class="caption-content">
-                                    <div class="h3">도시철도 적자</div>
-                                    <p class="mb-0 h2">고령층의 무임승차가 도시철도 적자로 이어지는지 생각해봅시다.</p>
+                                    <div class="h3">{{ topic_detail[1] }}</div>
+                                    <p class="mb-0 h2">{{ topic_detail[1] }} 에 대해서 생각해봅시다.</p>
                                 </div>
                             </div>
-                            <img class="img-fluid" src="/static/assets/img/1.jpg" alt="..."/>
+                            <img class="img-fluid" src="/static/assets/img/{{ topic_detail[2] }}" alt="..." />
                         </a>
                     </div>
-                    <div class="col-lg-6">
-                        <a class="portfolio-item">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <div class="h3">직장 내 괴롭힘</div>
-                                    <p class="mb-0 h2">직장 내 괴롭힘이 사망까지 이어진 사례를 보며 이야기를 나눠봅시다.</p>
-                                </div>
-                            </div>
-                            <img class="img-fluid" src="/static/assets/img/2.png" alt="..." />
-                        </a>
-                    </div>
-                    <div class="col-lg-6">
-                        <a class="portfolio-item">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <div class="h3">북한의 도발</div>
-                                    <p class="mb-0 h2">북한의 도발에 대해 이야기를 나눠봅시다.</p>
-                                </div>
-                            </div>
-                            <img class="img-fluid" src="/static/assets/img/3.jpg" alt="..." 
-                            />
-                        </a>
-                    </div>
-                    <div class="col-lg-6">
-                        <a class="portfolio-item">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <div class="h3">저출산</div>
-                                    <p class="mb-0 h2">저출산에 대해 이야기를 나눠봅시다.</p>
-                                </div>
-                            </div>
-                            <img class="img-fluid" src="/static/assets/img/4.jpg" alt="..." 
-                            />
-                        </a>
-                    </div>
+                    {% endfor %}
                 </div>
                 <div class="row p-4 gx-0">
                     <div class="col-lg-12 d-flex justify-content-center">

@@ -22,50 +22,68 @@ function fadeIn(el, display) {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-    
-    function isPortfolioItemSelected() {
-        return document.querySelector('.portfolio-item.selected') !== null;
+    function getSelectedTopicId() {
+        const selectedElement = document.querySelector('.portfolio-item.selected');
+        const topicId = selectedElement ? selectedElement.getAttribute('data-id') : null;
+        console.log("Selected Topic ID:", topicId); // topic_id 출력
+        return topicId;
     }
 
-    // Function to redirect to the discussion page with appropriate action
-    function redirectToDiscussionPage(action, discussionId) {
-        window.location.href = `/discussions/${discussionId}/${action}`;
+    async function startDiscussion(action) {
+        const topicId = getSelectedTopicId();
+        if (!topicId) {
+            alert("주제를 선택하세요.");
+            return;
+        }
+
+        // Try to parse topicId as UUID
+        console.log("UUID 형식 검사 중:", topicId); // UUID 형식 검사 전 topic_id 출력
+        const uuidRegex = /^[0-9a-fA-F]{32}$/; // UUID 문자열 검증
+        if (!uuidRegex.test(topicId)) {
+            alert("잘못된 주제 ID입니다.");
+            return;
+        }
+
+        try {
+            console.log("POST 요청 전송 중:", topicId); // POST 요청 전 topic_id 출력
+            const response = await fetch('/discussions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ topic_id: topicId })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                window.location.href = `/discussions/${data.id}`;
+            } else {
+                const errorData = await response.json();
+                console.error('Error:', errorData);
+                alert("토론 생성에 실패했습니다. 오류: " + errorData.detail);
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            alert("토론 생성 중 오류가 발생했습니다.");
+        }
     }
 
-    // Add click event listeners to portfolio items
+    document.getElementById("text-start-button").addEventListener("click", function() {
+        startDiscussion("text");
+    });
+
+    document.getElementById("voice-start-button").addEventListener("click", function() {
+        startDiscussion("voice");
+    });
+
     document.querySelectorAll('.portfolio-item').forEach(item => {
         item.addEventListener('click', function() {
-            // Remove selected class from all portfolio items
-            document.querySelectorAll('.portfolio-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            // Add selected class to the clicked portfolio item
+            document.querySelectorAll('.portfolio-item').forEach(item => item.classList.remove('selected'));
             this.classList.add('selected');
         });
     });
 
-    // Add click event listeners to "글로 시작하기" and "말로 시작하기" buttons
-    document.getElementById("text-start-button").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default action of link
-        // Redirect to the discussion page with appropriate action if a portfolio item is selected
-        if (isPortfolioItemSelected()) {
-            const discussionId = "{{ discussion_id }}"; // discussion_id를 FastAPI 템플릿 시스템을 통해 전달받음
-            redirectToDiscussionPage("text", discussionId);
-        } else {
-            // Show alert if no portfolio item is selected
-            alert("주제를 선택하세요.");
-        }
-    });
-
-    document.getElementById("voice-start-button").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default action of link
-        // Redirect to the discussion page with appropriate action if a portfolio item is selected
-        if (isPortfolioItemSelected()) {
-            const discussionId = "{{ discussion_id }}"; // discussion_id를 FastAPI 템플릿 시스템을 통해 전달받음
-            redirectToDiscussionPage("voice", discussionId);
-        } else {
-            // Show alert if no portfolio item is selected
-            alert("주제를 선택하세요.");
-        }
+    document.getElementById("refresh-button").addEventListener("click", function() {
+        window.location.reload();
     });
 });

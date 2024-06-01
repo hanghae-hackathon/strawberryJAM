@@ -21,8 +21,6 @@ class Discussion(Base):
 
     id = mapped_column(BLOB, primary_key=True, default=lambda: uuid.uuid4().bytes)
     topic_id = mapped_column(BLOB, ForeignKey("topics.id"), nullable=False)
-    title = mapped_column(String, nullable=False)
-    content = mapped_column(Text, nullable=False)
 
     topic: Mapped["Topic"] = relationship("Topic", back_populates="discussions")
     messages: Mapped[List["Message"]] = relationship(
@@ -33,11 +31,7 @@ class Discussion(Base):
     def create(
         cls,
         topic_id: bytes,
-        title: str,
-        content: str,
     ) -> "Discussion":
         return cls(
-            topic_id=topic_id,
-            title=title,
-            content=content,
+            topic_id=topic_id
         )

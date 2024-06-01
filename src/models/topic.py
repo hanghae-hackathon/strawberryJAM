@@ -6,6 +6,7 @@ from sqlalchemy import (
     BLOB,
     String,
     Text,
+    Integer
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,6 +20,7 @@ class Topic(Base):
     id = mapped_column(BLOB, primary_key=True, default=lambda: uuid.uuid4().bytes)
     title = mapped_column(String, nullable=False)
     description = mapped_column(Text, nullable=False)
+    image = mapped_column(Text)
 
     discussions: Mapped[List["Discussion"]] = relationship(
         "Discussion", back_populates="topic"

@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -19,23 +19,27 @@ async def read_discussion(
     templates: Jinja2Templates = Depends(get_templates),
     repo: DiscussionRepository = Depends(DiscussionRepository),
 ):
-    return templates.TemplateResponse(
-        request=request,
-        name="chat.html",
-        context={"discussion_id": discussion_id},
-    )
+    try:
+        discussion = await repo.get_discussion(discussion_id.bytes)
+        if not discussion:
+            raise HTTPException(status_code=404, detail="Discussion not found")
+
+        return templates.TemplateResponse(
+            request=request,
+            name="discussion.html",
+            context={"discussion_id": discussion_id, "discussion": discussion},
+        )
+    except Exception as e:
+        print(f"Error reading discussion {discussion_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 class CreateDiscussionRequest(BaseModel):
-    title: str
-    content: str
-    topic_id: bytes
+    topic_id: uuid.UUID
 
 
 class CreateDiscussionResponse(BaseModel):
     id: uuid.UUID
-    title: str
-    content: str
 
 
 @router.post("/")
@@ -43,12 +47,17 @@ async def create_discussion(
     q: CreateDiscussionRequest,
     repo: DiscussionRepository = Depends(DiscussionRepository),
 ) -> CreateDiscussionResponse:
-    discussion = await repo.create_discussion(
-        discussion=Discussion.create(**q.model_dump())
-    )
+    try:
+        print(q)
+        discussion = await repo.create_discussion(
+            discussion=Discussion.create(
+                q.topic_id.bytes,
+            )
+        )
 
-    return CreateDiscussionResponse(
-        id=discussion.id,
-        title=discussion.title,
-        content=discussion.content,
-    )
+        return CreateDiscussionResponse(
+            id=discussion.id
+        )
+    except Exception as e:
+        print(f"Error creating discussion: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
