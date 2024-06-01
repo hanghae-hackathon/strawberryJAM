@@ -74,7 +74,7 @@ class GPTService:
             openai_api_key=config_template.OPENAI_API_KEY,
             temperature=0.5,
         )
-
+    
     # 맨 처음 호출될 함수
     def init_memory(self, discussion_id: str, system_message: str) -> None:
         """
